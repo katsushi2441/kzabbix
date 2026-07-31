@@ -55,19 +55,48 @@ def main() -> None:
         {"name": "event_date", "value": "{EVENT.DATE}"},
         {"name": "event_time", "value": "{EVENT.TIME}"},
     ]
+    message_templates = [
+        {
+            "eventsource": 0,
+            "recovery": 0,
+            "subject": "Problem: {EVENT.NAME}",
+            "message": "Kurage Zabbix AI investigation for problem event {EVENT.ID}",
+        },
+        {
+            "eventsource": 0,
+            "recovery": 1,
+            "subject": "Resolved: {EVENT.NAME}",
+            "message": "Kurage Zabbix AI investigation for recovered event {EVENT.ID}",
+        },
+    ]
     script = Path("zabbix/webhook.js").read_text(encoding="utf-8")
     found = api.call("mediatype.get", {"output": "extend", "filter": {"name": [name]}})
     if found:
         media_id = found[0]["mediatypeid"]
         api.call(
             "mediatype.update",
-            {"mediatypeid": media_id, "type": 4, "status": 0, "parameters": params, "script": script},
+            {
+                "mediatypeid": media_id,
+                "type": 4,
+                "status": 0,
+                "parameters": params,
+                "script": script,
+                "message_templates": message_templates,
+            },
         )
         media_action = "updated"
     else:
         made = api.call(
             "mediatype.create",
-            {"name": name, "type": 4, "status": 0, "parameters": params, "script": script, "timeout": "30s"},
+            {
+                "name": name,
+                "type": 4,
+                "status": 0,
+                "parameters": params,
+                "script": script,
+                "timeout": "30s",
+                "message_templates": message_templates,
+            },
         )
         media_id = made["mediatypeids"][0]
         media_action = "created"
