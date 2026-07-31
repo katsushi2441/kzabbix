@@ -1,0 +1,3 @@
+[submodule "vendor/bludit"]
+	path = vendor/bludit
+	url = https://github.com/katsushi2441/bludit.git

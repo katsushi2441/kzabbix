@@ -1,0 +1,15 @@
+[Unit]
+Description=Kurage Zabbix incident analysis API
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/kojima/work/kzabbix
+EnvironmentFile=/home/kojima/work/kzabbix/.env
+ExecStart=/home/kojima/work/kzabbix/.venv/bin/uvicorn kzabbix.api:app --host 127.0.0.1 --port 18300
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+

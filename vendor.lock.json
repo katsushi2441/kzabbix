@@ -1,0 +1,10 @@
+{
+  "bludit": {
+    "repository": "https://github.com/katsushi2441/bludit.git",
+    "upstream": "https://github.com/bludit/bludit.git",
+    "version": "3.22.0",
+    "commit": "c573a995a97dc80bf4eadd454f466d7a6ad2bba0",
+    "license": "MIT"
+  }
+}
+
