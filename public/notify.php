@@ -33,11 +33,17 @@ if ($body === '') {
 }
 $subject = mb_substr(str_replace(["\r", "\n"], ' ', $subject), 0, 180);
 $headers = [
-    'From: Kurage Zabbix <no-reply@kurage.exbridge.jp>',
+    'From: Kurage Zabbix <bm@exbridge.jp>',
     'Content-Type: text/plain; charset=UTF-8',
     'Content-Transfer-Encoding: 8bit',
 ];
-$sent = mail('katsushi2441@gmail.com', mb_encode_mimeheader($subject, 'UTF-8'), $body, implode("\r\n", $headers));
+$sent = mail(
+    'katsushi2441@gmail.com',
+    mb_encode_mimeheader($subject, 'UTF-8'),
+    $body,
+    implode("\r\n", $headers),
+    '-fbm@exbridge.jp'
+);
 if (!$sent) {
     http_response_code(502);
     echo json_encode(['ok' => false, 'error' => 'mail transport rejected message']);
