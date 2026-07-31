@@ -20,6 +20,7 @@ sed -i "s/array('mbstring', 'json', 'gd', 'dom', 'session')/array('mbstring', 'j
 php scripts/init_bludit.php "$build_dir" "$BLUDIT_ADMIN_PASSWORD"
 test -f "$build_dir/bl-content/databases/site.php"
 install -m 0644 vendor/bludit/install.php "$build_dir/bludit-install.php"
+sed -i 's#^RewriteBase /$#RewriteBase /zabbix/#' "$build_dir/.htaccess"
 php scripts/configure_bludit.php "$build_dir" "$BLUDIT_API_TOKEN" "$BLUDIT_AUTH_TOKEN" "$BLUDIT_GATE_TOKEN" "$BLUDIT_ADMIN_PASSWORD"
 rsync -a --delete bludit/theme/kzabbix/ "$build_dir/bl-themes/kzabbix/"
 echo "built: $build_dir"
