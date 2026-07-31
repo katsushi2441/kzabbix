@@ -53,6 +53,8 @@ def processor() -> IncidentProcessor:
             cfg.smtp_password,
             cfg.smtp_from,
             cfg.report_email_to,
+            cfg.mail_relay_url,
+            cfg.mail_relay_token,
         ),
         BluditPublisher(
             cfg.bludit_api_url, cfg.bludit_api_token, cfg.bludit_auth_token, cfg.bludit_gate_token

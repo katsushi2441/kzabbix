@@ -26,6 +26,8 @@ class Settings:
     smtp_password: str
     smtp_from: str
     report_email_to: str
+    mail_relay_url: str
+    mail_relay_token: str
     bludit_api_url: str
     bludit_api_token: str
     bludit_auth_token: str
@@ -48,6 +50,8 @@ class Settings:
             smtp_password=os.getenv("SMTP_PASSWORD", ""),
             smtp_from=os.getenv("SMTP_FROM", smtp_username),
             report_email_to=os.getenv("REPORT_EMAIL_TO", "katsushi2441@gmail.com"),
+            mail_relay_url=os.getenv("MAIL_RELAY_URL", "https://kurage.exbridge.jp/zabbix/notify.php"),
+            mail_relay_token=os.getenv("MAIL_RELAY_TOKEN", ""),
             bludit_api_url=os.getenv("BLUDIT_API_URL", "https://kurage.exbridge.jp/zabbix/api/pages"),
             bludit_api_token=os.getenv("BLUDIT_API_TOKEN", ""),
             bludit_auth_token=os.getenv("BLUDIT_AUTH_TOKEN", ""),

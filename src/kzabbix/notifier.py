@@ -7,21 +7,47 @@ import requests
 
 
 class EmailNotifier:
-    def __init__(self, host: str, port: int, username: str, password: str, sender: str, recipient: str):
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        username: str,
+        password: str,
+        sender: str,
+        recipient: str,
+        relay_url: str = "",
+        relay_token: str = "",
+    ):
         self.host = host
         self.port = port
         self.username = username
         self.password = password
         self.sender = sender
         self.recipient = recipient
+        self.relay_url = relay_url
+        self.relay_token = relay_token
 
     @property
     def enabled(self) -> bool:
-        return bool(self.host and self.username and self.password and self.sender and self.recipient)
+        relay = bool(self.relay_url and self.relay_token and self.recipient)
+        smtp = bool(self.host and self.username and self.password and self.sender and self.recipient)
+        return relay or smtp
 
     def send(self, subject: str, report: str) -> None:
         if not self.enabled:
-            raise RuntimeError("SMTP settings are incomplete")
+            raise RuntimeError("email settings are incomplete")
+        if self.relay_url and self.relay_token:
+            response = requests.post(
+                self.relay_url,
+                headers={"X-KZabbix-Gate-Token": self.relay_token},
+                json={"subject": subject, "body": report},
+                timeout=30,
+            )
+            response.raise_for_status()
+            payload = response.json()
+            if not payload.get("ok"):
+                raise RuntimeError(f"mail relay rejected message: {payload}")
+            return
         message = EmailMessage()
         message["Subject"] = subject
         message["From"] = self.sender

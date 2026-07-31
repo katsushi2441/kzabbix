@@ -37,6 +37,7 @@ def main() -> None:
     if not zabbix_password:
         raise SystemExit("ZABBIX_PASSWORD must be supplied in the process environment")
     smtp_from = mail.get("SMTP_FROM", "")
+    gate_token = secrets.token_hex(32)
     values = {
         "KZABBIX_API_TOKEN": secrets.token_hex(32),
         "KZABBIX_DB_PATH": "/home/kojima/work/kzabbix/data/incidents.sqlite3",
@@ -51,10 +52,12 @@ def main() -> None:
         "SMTP_PASSWORD": mail.get("SMTP_PASSWORD", ""),
         "SMTP_FROM": smtp_from,
         "REPORT_EMAIL_TO": "katsushi2441@gmail.com",
+        "MAIL_RELAY_URL": "https://kurage.exbridge.jp/zabbix/notify.php",
+        "MAIL_RELAY_TOKEN": gate_token,
         "BLUDIT_API_URL": "https://kurage.exbridge.jp/zabbix/api/pages",
         "BLUDIT_API_TOKEN": secrets.token_hex(32),
         "BLUDIT_AUTH_TOKEN": secrets.token_hex(24),
-        "BLUDIT_GATE_TOKEN": secrets.token_hex(32),
+        "BLUDIT_GATE_TOKEN": gate_token,
         "BLUDIT_ADMIN_PASSWORD": secrets.token_urlsafe(36),
     }
     missing = [name for name in ("SMTP_USERNAME", "SMTP_PASSWORD") if not values[name]]

@@ -12,6 +12,7 @@ mv "$build_dir/index.php" "$build_dir/bludit.php"
 mv "$build_dir/install.php" "$build_dir/bludit-install.php"
 install -m 0644 public/index.php "$build_dir/index.php"
 install -m 0644 public/install.php "$build_dir/install.php"
+install -m 0644 public/notify.php "$build_dir/notify.php"
 # The build host CLI lacks gd/dom, but database initialization does not use
 # either extension. Relax only the disposable initializer, then restore the
 # pristine installer before deployment so production requirements stay intact.

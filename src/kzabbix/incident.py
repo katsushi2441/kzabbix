@@ -30,9 +30,25 @@ def redact(value: Any) -> Any:
 
 
 def build_prompt(payload: dict[str, Any], evidence: dict[str, Any]) -> str:
-    compact = json.dumps(redact(evidence), ensure_ascii=False, separators=(",", ":"))
-    if len(compact) > 120_000:
-        compact = compact[:120_000] + '..."[TRUNCATED]"'
+    safe = redact(evidence)
+    interesting = re.compile(
+        r"(?i)(log|agent\.ping|system\.uptime|net\.|icmpping|web\.|resolv\.conf|/proc/net/route|error|drop)"
+    )
+    safe["items"] = [
+        item
+        for item in safe.get("items", [])
+        if item.get("error") or interesting.search(f"{item.get('name', '')} {item.get('key_', '')}")
+    ][:80]
+    history = [
+        row
+        for row in safe.get("history", [])
+        if interesting.search(f"{row.get('name', '')} {row.get('key', '')} {row.get('value', '')[:200]}")
+    ]
+    safe["history"] = history[-300:]
+    compact = json.dumps(safe, ensure_ascii=False, separators=(",", ":"))
+    while len(compact) > 50_000 and len(safe["history"]) > 40:
+        safe["history"] = safe["history"][len(safe["history"]) // 4 :]
+        compact = json.dumps(safe, ensure_ascii=False, separators=(",", ":"))
     return f"""あなたはKurage Zabbixの障害調査担当です。以下のZabbixイベントと実測データだけを根拠に、日本語Markdownレポートを作成してください。
 
 必須ルール:
