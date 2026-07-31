@@ -125,7 +125,7 @@ def main() -> None:
         ],
         "recovery_operations": [
             {
-                "operationtype": 11,
+                "operationtype": 0,
                 "opmessage": {"default_msg": 1, "mediatypeid": media_id},
                 "opmessage_usr": [{"userid": user_id}],
             }

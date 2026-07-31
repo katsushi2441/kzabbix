@@ -21,5 +21,5 @@ ssh "${ssh_opts[@]}" "kojima@${remote_host}" "chmod 600 '${remote_dir}/.env'; \
   cd '${remote_dir}'; python3 -m venv .venv; .venv/bin/pip install -q -e .; \
   mkdir -p data /home/kojima/.config/systemd/user; \
   install -m 0644 systemd/kzabbix-api.service /home/kojima/.config/systemd/user/kzabbix-api.service; \
-  systemctl --user daemon-reload; systemctl --user enable --now kzabbix-api; \
+  systemctl --user daemon-reload; systemctl --user enable kzabbix-api; systemctl --user restart kzabbix-api; \
   systemctl --user is-enabled kzabbix-api; systemctl --user is-active kzabbix-api"
