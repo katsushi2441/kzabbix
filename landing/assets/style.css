@@ -1,0 +1,55 @@
+/* Kurage Zabbix LP — White Studio / pale aqua (kurageシリーズ共通) */
+:root{--ink:#12333c;--muted:#5f7a82;--line:#d9eae7;--aqua:#18b7cf;--deep:#0799b4;--navy:#153f55;--mint:#e4f6f1;--ok:#0f9d6d;--crit:#d9463e}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:"Noto Sans JP","Yu Gothic",-apple-system,sans-serif;
+  background:radial-gradient(circle at 90% -5%,#dcf4ef 0,transparent 30%),radial-gradient(circle at -8% 40%,#e7f7fb 0,transparent 28%),#f4faf9}
+header{height:66px;padding:0 max(20px,calc((100% - 1040px)/2));position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit}
+.brand img{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--mint)}
+.brand strong{display:block;font-size:15px}
+.brand small{display:block;margin-top:2px;font-size:9px;font-weight:800;letter-spacing:.14em;color:var(--muted)}
+.lang{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:12px;font-weight:800;text-decoration:none}
+.lang:hover{border-color:var(--aqua);color:var(--deep)}
+main{max-width:1000px;margin:0 auto;padding:46px 20px 90px}
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:center}
+.eyebrow{display:inline-block;padding:7px 13px;border:1px solid #bde8ed;border-radius:999px;color:#078fa8;font-size:10px;font-weight:900;letter-spacing:.1em}
+h1{margin:18px 0 14px;font-size:clamp(27px,4.4vw,40px);line-height:1.42;letter-spacing:-.02em}
+h1 em{color:var(--deep);font-style:normal}
+.lead{margin:0;color:var(--muted);font-size:14px;line-height:2}
+.cta-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.cta{display:inline-block;padding:13px 24px;border-radius:999px;color:#fff;text-decoration:none;font-size:13px;font-weight:800;
+  background:linear-gradient(135deg,var(--aqua),var(--deep));box-shadow:0 10px 22px rgba(13,166,188,.22)}
+.cta.ghost{background:#fff;color:var(--navy);border:1px solid var(--line);box-shadow:none}
+.cta.ghost:hover{border-color:var(--aqua);color:var(--deep)}
+.hero-visual{position:relative;border:1px solid #c8e9ef;border-radius:26px;min-height:360px;overflow:hidden;
+  background:radial-gradient(circle at 50% 36%,#fff 0 20%,#eefbfc 46%,#dff5f8 80%);box-shadow:0 24px 60px rgba(9,103,127,.14)}
+.hero-visual img{position:absolute;left:50%;bottom:-6%;transform:translateX(-50%);width:64%;filter:drop-shadow(0 16px 24px rgba(14,116,144,.18))}
+.hero-chip{position:absolute;padding:7px 11px;border:1px solid #b7e0e8;border-radius:999px;background:rgba(255,255,255,.94);
+  box-shadow:0 8px 22px rgba(19,91,110,.11);font-size:11px;font-weight:900;color:#1c5869}
+section{margin-top:62px}
+h2{margin:0 0 6px;font-size:23px;letter-spacing:-.01em}
+.sub{margin:0 0 20px;color:var(--muted);font-size:13px;line-height:1.9}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;counter-reset:step}
+.step{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 14px 34px rgba(21,73,82,.06);position:relative}
+.step::before{counter-increment:step;content:counter(step,decimal-leading-zero);position:absolute;top:18px;right:20px;
+  color:#d3e9e5;font-size:26px;font-weight:900;letter-spacing:-.04em}
+.step .ico{font-size:24px}
+.step h3{margin:10px 0 8px;font-size:15px;color:var(--navy)}
+.step p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.9}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 14px 34px rgba(21,73,82,.06)}
+.card .ico{font-size:24px}
+.card h3{margin:10px 0 8px;font-size:15px;color:var(--navy)}
+.card p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.9}
+.report-demo{background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:0 18px 44px rgba(21,73,82,.08)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+.chip{padding:7px 13px;border-radius:999px;background:var(--mint);border:1px solid #c8e9df;color:#0b6e60;font-size:12px;font-weight:800}
+.badge{display:inline-block;padding:4px 11px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.08em;color:#fff;background:linear-gradient(135deg,#2cc48f,var(--ok))}
+.mock-title{margin:10px 0 4px;font-size:16px;color:var(--navy);font-weight:800}
+.mock-meta{color:var(--muted);font-size:11px}
+.stack{display:flex;flex-wrap:wrap;gap:8px}
+.stack span{padding:8px 14px;border-radius:999px;background:#fff;border:1px solid var(--line);color:var(--navy);font-size:12px;font-weight:800}
+footer{max-width:1000px;margin:0 auto;padding:0 20px 44px;color:#8aa4ab;font-size:11px;line-height:1.9}
+footer a{color:var(--deep);text-decoration:none}
+@media(max-width:760px){.hero{grid-template-columns:1fr}.hero-visual{min-height:280px}.brand small{display:none}main{padding:30px 14px 70px}}

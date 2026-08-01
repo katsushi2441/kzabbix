@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kurage Zabbix — Kurage finds, investigates and reports incidents</title>
+<meta name="description" content="A monitoring system where Kurage (a local LLM, Gemma4) automatically collects evidence, investigates incidents detected by Zabbix, and delivers 8-section investigation reports to email and a private blog.">
+<link rel="icon" href="assets/kurage_avatar_face.webp">
+<link rel="canonical" href="https://kzabbix.exbridge.jp/">
+<link rel="alternate" hreflang="ja" href="https://kzabbix.exbridge.jp/kzabbix.html">
+<link rel="alternate" hreflang="en" href="https://kzabbix.exbridge.jp/">
+<link rel="alternate" hreflang="x-default" href="https://kzabbix.exbridge.jp/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kurage Zabbix">
+<meta property="og:title" content="Kurage Zabbix — Kurage finds, investigates and reports incidents">
+<meta property="og:description" content="Zabbix detection → evidence collection → local-LLM investigation → report delivery, fully automated.">
+<meta property="og:url" content="https://kzabbix.exbridge.jp/">
+<meta property="og:image" content="https://kzabbix.exbridge.jp/assets/kzabbix-ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kzabbix.exbridge.jp/assets/kzabbix-ogp.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Kurage Zabbix","applicationCategory":"Monitoring","operatingSystem":"Web","url":"https://kzabbix.exbridge.jp/","description":"A monitoring system where a local LLM automatically investigates incidents detected by Zabbix and delivers reports","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BP0650KDFR"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BP0650KDFR');</script>
+<script>
+(function(){var s=document.createElement('script');s.src='https://kurage.exbridge.jp/simpletrack.php?url='+encodeURIComponent(location.href)+'&ref='+encodeURIComponent(document.referrer);document.head.appendChild(s);})();
+</script>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header>
+  <a class="brand" href="./">
+    <img src="assets/kurage_avatar_face.webp" alt="Kurage">
+    <span><strong>Kurage Zabbix</strong><small>PRIVATE INCIDENT INTELLIGENCE</small></span>
+  </a>
+  <a class="lang" href="kzabbix.html">日本語</a>
+</header>
+<main>
+  <div class="hero">
+    <div>
+      <span class="eyebrow">● 24/7 INCIDENT MONITORING</span>
+      <h1>Kurage finds incidents, <em>investigates them, and reports.</em></h1>
+      <p class="lead">Kurage Zabbix is a monitoring system where Kurage — a local LLM — automatically investigates incidents detected by Zabbix. Evidence collection, log analysis, root-cause candidates with confidence levels, and recommended actions: the first hours of incident response, delivered as a report within minutes of detection.</p>
+      <div class="cta-row">
+        <a class="cta" href="https://kurage.exbridge.jp/zabbix/">View the incident report blog</a>
+        <a class="cta ghost" href="#how">How it works</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <span class="hero-chip" style="left:6%;top:10%">⏱ Reports within minutes</span>
+      <span class="hero-chip" style="right:5%;top:22%">🔒 Logs never leave the box</span>
+      <span class="hero-chip" style="left:8%;top:52%">✉ Email + private blog</span>
+      <img src="assets/kurage_avatar_face.webp" alt="Kurage" style="width:52%;border-radius:50%">
+    </div>
+  </div>
+
+  <section id="how">
+    <h2>How it works — fully automated, detection to report</h2>
+    <p class="sub">Your existing Zabbix Server stays the source of truth. Incident events trigger the AI investigation pipeline via webhook.</p>
+    <div class="steps">
+      <div class="step"><div class="ico">📡</div><h3>Zabbix detects</h3><p>Triggers, log monitoring (log/logrt) and SNMP traps watch 24/7. Incident events reach Kurage Zabbix via webhook.</p></div>
+      <div class="step"><div class="ico">🔍</div><h3>Evidence collected</h3><p>Raw events, related logs and metrics are pulled automatically from the Zabbix API — the primary evidence an investigator needs.</p></div>
+      <div class="step"><div class="ico">🧠</div><h3>Kurage investigates</h3><p>A local LLM (Gemma4 12B) reads the evidence and derives the summary, timeline, log analysis, root-cause candidates with confidence, and recommended actions. Confidential logs never reach external APIs.</p></div>
+      <div class="step"><div class="ico">📮</div><h3>Report delivered</h3><p>The identical report goes to email and a private blog simultaneously, building a searchable knowledge base of every incident.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The 8-section investigation report</h2>
+    <p class="sub">Every report follows the same structure — even at 3 a.m., you know exactly where to look.</p>
+    <div class="report-demo">
+      <span class="badge">RESOLVED</span>
+      <div class="mock-title">[web-01] HTTP service is down</div>
+      <div class="mock-meta">2026-08-01 03:15 · duration 2m58s · #kz-20260801-0312a</div>
+      <div class="chips">
+        <span class="chip">◎ Summary</span><span class="chip">⚑ Impact</span><span class="chip">⏱ Timeline</span><span class="chip">☰ Observed facts</span>
+        <span class="chip">⌗ Log analysis</span><span class="chip">⚙ Root causes &amp; confidence</span><span class="chip">✔ Recommended actions</span><span class="chip">＋ Evidence needed</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Features</h2>
+    <div class="grid">
+      <div class="card"><div class="ico">♻️</div><h3>Works with your Zabbix</h3><p>No monitoring migration. One webhook added to a running Zabbix Server 7.0 is all it takes.</p></div>
+      <div class="card"><div class="ico">🔒</div><h3>Logs never leave the box</h3><p>Investigation runs entirely on a local GPU with Gemma4. Incident logs and configuration details are never sent to cloud LLMs.</p></div>
+      <div class="card"><div class="ico">📚</div><h3>Incident knowledge accrues</h3><p>Reports accumulate chronologically on an X-authenticated private blog — past incidents are always a search away.</p></div>
+      <div class="card"><div class="ico">🧩</div><h3>Built on OSS</h3><p>The blog is Bludit (MIT), vendored and pinned. A thin layer on top of proven OSS: Zabbix, rsyslog, Net-SNMP.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Stack</h2>
+    <div class="stack">
+      <span>Zabbix 7.0</span><span>Gemma4 12B (local LLM)</span><span>FastAPI</span><span>Bludit</span><span>SNMP / rsyslog</span><span>X auth (private access)</span>
+    </div>
+  </section>
+</main>
+<footer>
+  Kurage Zabbix — a system where Kurage monitors, detects and reports incidents.<br>
+  <a href="https://kurage.exbridge.jp/zabbix/">Incident report blog</a> ·
+  <a href="https://kurage.exbridge.jp/">Kurage</a> ·
+  <a href="https://kurage.exbridge.jp/koss.php?lang=en">Kurage OSS Community</a> ·
+  <a href="https://x.com/xb_bittensor">X @xb_bittensor</a>
+</footer>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kurage Zabbix — Kurageさんが障害を見つけて、調べて、報告する</title>
+<meta name="description" content="Zabbixが検知した障害を、Kurageさん(ローカルLLM Gemma4)が自動で証拠収集・調査し、8セクションの調査レポートをメールと限定ブログへ配信する監視システムです。">
+<link rel="icon" href="assets/kurage_avatar_face.webp">
+<link rel="canonical" href="https://kzabbix.exbridge.jp/kzabbix.html">
+<link rel="alternate" hreflang="ja" href="https://kzabbix.exbridge.jp/kzabbix.html">
+<link rel="alternate" hreflang="en" href="https://kzabbix.exbridge.jp/">
+<link rel="alternate" hreflang="x-default" href="https://kzabbix.exbridge.jp/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kurage Zabbix">
+<meta property="og:title" content="Kurage Zabbix — Kurageさんが障害を見つけて、調べて、報告する">
+<meta property="og:description" content="Zabbix検知 → 証拠収集 → ローカルLLM調査 → レポート配信を全自動で行う障害監視システム。">
+<meta property="og:url" content="https://kzabbix.exbridge.jp/kzabbix.html">
+<meta property="og:image" content="https://kzabbix.exbridge.jp/assets/kzabbix-ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kzabbix.exbridge.jp/assets/kzabbix-ogp.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Kurage Zabbix","applicationCategory":"Monitoring","operatingSystem":"Web","url":"https://kzabbix.exbridge.jp/","description":"Zabbixが検知した障害をローカルLLMが自動調査し、レポートを配信する監視システム","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BP0650KDFR"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BP0650KDFR');</script>
+<script>
+(function(){var s=document.createElement('script');s.src='https://kurage.exbridge.jp/simpletrack.php?url='+encodeURIComponent(location.href)+'&ref='+encodeURIComponent(document.referrer);document.head.appendChild(s);})();
+</script>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header>
+  <a class="brand" href="kzabbix.html">
+    <img src="assets/kurage_avatar_face.webp" alt="Kurageさん">
+    <span><strong>Kurage Zabbix</strong><small>PRIVATE INCIDENT INTELLIGENCE</small></span>
+  </a>
+  <a class="lang" href="./">English</a>
+</header>
+<main>
+  <div class="hero">
+    <div>
+      <span class="eyebrow">● 24/7 INCIDENT MONITORING</span>
+      <h1>Kurageさんが、障害を見つけて、<em>調べて、報告する。</em></h1>
+      <p class="lead">Kurage Zabbixは、Zabbixが検知した障害をKurageさん(ローカルLLM)が自動で調査する監視システムです。証拠収集からログ解析、原因候補の特定、推奨対応まで——人が障害対応で最初にやる仕事を、検知から数分でレポートにまとめて届けます。</p>
+      <div class="cta-row">
+        <a class="cta" href="https://kurage.exbridge.jp/zabbix/">障害調査レポートブログを見る</a>
+        <a class="cta ghost" href="#how">仕組みを見る</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <span class="hero-chip" style="left:6%;top:10%">⏱ 検知から数分でレポート</span>
+      <span class="hero-chip" style="right:5%;top:22%">🔒 ログは外部に出さない</span>
+      <span class="hero-chip" style="left:8%;top:52%">✉ メール + 限定ブログ</span>
+      <img src="assets/kurage_avatar_face.webp" alt="Kurageさん" style="width:52%;border-radius:50%">
+    </div>
+  </div>
+
+  <section id="how">
+    <h2>仕組み — 検知から報告まで全自動</h2>
+    <p class="sub">既存のZabbix Serverをそのまま監視の正として使い、障害イベントをフックにAI調査パイプラインが走ります。</p>
+    <div class="steps">
+      <div class="step"><div class="ico">📡</div><h3>Zabbixが検知</h3><p>トリガー・ログ監視(log/logrt)・SNMPトラップで24時間365日監視。障害イベントがWebhookでKurage Zabbixへ届きます。</p></div>
+      <div class="step"><div class="ico">🔍</div><h3>証拠を収集</h3><p>Zabbix APIからイベント・関連ログ・メトリクスの生データを自動収集。調査に必要な一次証拠を揃えます。</p></div>
+      <div class="step"><div class="ico">🧠</div><h3>Kurageさんが調査</h3><p>ローカルLLM(Gemma4 12B)が証拠を読み、概要・時系列・ログ解析・原因候補と確度・推奨対応を導きます。機密ログは外部APIに送りません。</p></div>
+      <div class="step"><div class="ico">📮</div><h3>レポートを配信</h3><p>同一のレポートをメール通知と限定ブログへ同時配信。障害の記録が検索できるナレッジとして蓄積されます。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>8セクションの調査レポート</h2>
+    <p class="sub">毎回同じ構造で書かれるので、深夜のアラートでも読む場所が決まっています。</p>
+    <div class="report-demo">
+      <span class="badge">RESOLVED</span>
+      <div class="mock-title">[web-01] HTTP service is down</div>
+      <div class="mock-meta">2026-08-01 03:15 · 継続 2分58秒 · #kz-20260801-0312a</div>
+      <div class="chips">
+        <span class="chip">◎ 概要</span><span class="chip">⚑ 影響範囲</span><span class="chip">⏱ 時系列</span><span class="chip">☰ 観測事実</span>
+        <span class="chip">⌗ ログ解析</span><span class="chip">⚙ 原因候補と確度</span><span class="chip">✔ 推奨対応</span><span class="chip">＋ 追加で必要な証拠</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>特徴</h2>
+    <div class="grid">
+      <div class="card"><div class="ico">♻️</div><h3>既存Zabbixをそのまま活用</h3><p>監視基盤の入れ替え不要。動いているZabbix Server 7.0にWebhookを1本足すだけで導入できます。</p></div>
+      <div class="card"><div class="ico">🔒</div><h3>ログを外部に出さない</h3><p>調査はローカルGPU上のGemma4で完結。障害ログや構成情報がクラウドLLMへ送信されることはありません。</p></div>
+      <div class="card"><div class="ico">📚</div><h3>障害ナレッジが貯まる</h3><p>レポートはX認証つきの限定ブログに時系列で蓄積。過去の類似障害をいつでも振り返れます。</p></div>
+      <div class="card"><div class="ico">🧩</div><h3>OSSで構成</h3><p>ブログはBludit(MIT)をvendor固定。Zabbix・rsyslog・Net-SNMPなど実績あるOSSの上に薄く乗る設計です。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>スタック</h2>
+    <div class="stack">
+      <span>Zabbix 7.0</span><span>Gemma4 12B (ローカルLLM)</span><span>FastAPI</span><span>Bludit</span><span>SNMP / rsyslog</span><span>X認証(限定閲覧)</span>
+    </div>
+  </section>
+</main>
+<footer>
+  Kurage Zabbix — Kurageさんが障害監視・障害検知・調査報告を行うシステム。<br>
+  <a href="https://kurage.exbridge.jp/zabbix/">障害調査レポートブログ</a> ·
+  <a href="https://kurage.exbridge.jp/">Kurage</a> ·
+  <a href="https://kurage.exbridge.jp/koss.php">Kurage OSS Community</a> ·
+  <a href="https://x.com/xb_bittensor">X @xb_bittensor</a>
+</footer>
+</body>
+</html>
