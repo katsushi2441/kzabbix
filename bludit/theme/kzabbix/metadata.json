@@ -2,10 +2,9 @@
   "author": "Kurage",
   "email": "",
   "website": "https://kurage.exbridge.jp/zabbix/",
-  "version": "1.0.0",
-  "releaseDate": "2026-07-31",
+  "version": "1.1.0",
+  "releaseDate": "2026-08-01",
   "license": "MIT",
   "compatible": "3.22",
   "notes": "Private Kurage Zabbix incident report theme"
 }
-
