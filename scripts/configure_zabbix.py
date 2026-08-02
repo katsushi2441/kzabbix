@@ -167,8 +167,52 @@ def main() -> None:
     else:
         made = api.call("action.create", action)
         action_result = {"action": "created", "actionid": made["actionids"][0]}
+    monitored_hosts = ["xb-rtx3070-1", "xb-rtx3090-1", "Japan-RTX3080-1c", "Japan-RTX3090-2a"]
+    evidence_items = {}
+    item_specs = [
+        {
+            "name": "KZabbix incident evidence snapshot",
+            "key_": "vfs.file.contents[/var/tmp/kzabbix/evidence.json]",
+            "type": 7,
+            "value_type": 4,
+            "delay": "1m",
+            "history": "7d",
+            "trends": "0",
+        },
+        {
+            "name": "Zabbix Agent 2 internal log",
+            "key_": "log[/var/log/zabbix/zabbix_agent2.log,,,,skip]",
+            "type": 7,
+            "value_type": 2,
+            "delay": "1s",
+            "history": "7d",
+            "trends": "0",
+        },
+    ]
+    for host_name in monitored_hosts:
+        hosts = api.call("host.get", {"output": ["hostid", "host"], "filter": {"host": [host_name]}})
+        if not hosts:
+            evidence_items[host_name] = {"error": "host not found"}
+            continue
+        host_id = hosts[0]["hostid"]
+        configured = []
+        for spec in item_specs:
+            found_items = api.call(
+                "item.get",
+                {"output": ["itemid", "name", "key_"], "hostids": [host_id], "filter": {"key_": [spec["key_"]]}},
+            )
+            if found_items:
+                api.call("item.update", {"itemid": found_items[0]["itemid"], "status": 0, **spec})
+                configured.append({"itemid": found_items[0]["itemid"], "action": "updated", "key": spec["key_"]})
+            else:
+                made_item = api.call("item.create", {"hostid": host_id, "status": 0, **spec})
+                configured.append({"itemid": made_item["itemids"][0], "action": "created", "key": spec["key_"]})
+        evidence_items[host_name] = configured
     print(
-        json.dumps({"media_type": media_action, "mediatypeid": media_id, **action_result}, ensure_ascii=False)
+        json.dumps(
+            {"media_type": media_action, "mediatypeid": media_id, **action_result, "evidence_items": evidence_items},
+            ensure_ascii=False,
+        )
     )
 
 

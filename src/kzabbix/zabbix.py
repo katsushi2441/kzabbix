@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import time
 from typing import Any
 
@@ -45,11 +46,23 @@ class ZabbixClient:
             },
         )
         event = event_rows[0] if event_rows else {"eventid": event_id}
+        recovery_event: dict[str, Any] = {}
+        recovery_id = str(event.get("r_eventid") or "0")
+        if recovery_id != "0":
+            recovery_rows = self.rpc(
+                "event.get",
+                {"output": "extend", "eventids": [recovery_id], "selectHosts": ["hostid", "host", "name"]},
+            )
+            recovery_event = recovery_rows[0] if recovery_rows else {}
         hosts = event.get("hosts") or []
         resolved_host_id = host_id or (hosts[0].get("hostid") if hosts else "")
         clock = int(event.get("clock") or time.time())
         time_from = clock - 900
-        time_till = max(int(time.time()), clock + 60)
+        recovery_clock = int(recovery_event.get("clock") or 0)
+        if recovery_clock:
+            time_till = recovery_clock + 300
+        else:
+            time_till = min(max(int(time.time()), clock + 60), clock + 3600)
         if not resolved_host_id:
             return {"event": event, "hosts": hosts, "items": [], "history": []}
 
@@ -70,8 +83,31 @@ class ZabbixClient:
                 "filter": {"status": 0},
             },
         )
-        selected = sorted(items, key=lambda row: int(row.get("lastclock") or 0), reverse=True)[:160]
+        evidence_key = "vfs.file.contents[/var/tmp/kzabbix/evidence.json]"
+        priority = (
+            "kzabbix",
+            "evidence",
+            "log[",
+            "logrt[",
+            "smart.",
+            "vfs.dev.",
+            "system.cpu",
+            "system.load",
+            "system.swap",
+            "vfs.fs",
+            "net.",
+            "proc.",
+        )
+        selected = sorted(
+            items,
+            key=lambda row: (
+                any(value in f"{row.get('name', '')} {row.get('key_', '')}".lower() for value in priority),
+                int(row.get("lastclock") or 0),
+            ),
+            reverse=True,
+        )[:240]
         histories: list[dict[str, Any]] = []
+        snapshots: list[dict[str, Any]] = []
         by_type: dict[int, list[str]] = {}
         for item in selected:
             by_type.setdefault(int(item["value_type"]), []).append(item["itemid"])
@@ -92,6 +128,12 @@ class ZabbixClient:
             )
             for row in rows:
                 item = item_map.get(row["itemid"], {})
+                if item.get("key_") == evidence_key:
+                    try:
+                        snapshots.append({"clock": row.get("clock"), "data": json.loads(row["value"])})
+                    except (TypeError, ValueError):
+                        snapshots.append({"clock": row.get("clock"), "data": {"parse_error": "invalid snapshot"}})
+                    continue
                 histories.append(
                     {
                         "clock": row.get("clock"),
@@ -114,12 +156,27 @@ class ZabbixClient:
                 "limit": 50,
             },
         )
+        snapshots = sorted(
+            sorted(snapshots, key=lambda row: abs(int(row.get("clock") or 0) - clock))[:3],
+            key=lambda row: int(row.get("clock") or 0),
+        )
+        safe_items = []
+        for item in selected:
+            item = dict(item)
+            if item.get("key_") == evidence_key:
+                item["lastvalue"] = "[captured in evidence_snapshots]"
+            elif len(str(item.get("lastvalue") or "")) > 2000:
+                item["lastvalue"] = str(item["lastvalue"])[-2000:]
+            safe_items.append(item)
         return {
             "event": event,
+            "recovery_event": recovery_event,
+            "actual_duration_seconds": recovery_clock - clock if recovery_clock else None,
             "hosts": hosts,
             "host_id": resolved_host_id,
             "window": {"time_from": time_from, "time_till": time_till},
-            "items": selected,
+            "items": safe_items,
             "history": sorted(histories, key=lambda row: int(row.get("clock") or 0)),
+            "evidence_snapshots": snapshots,
             "problems": problems,
         }

@@ -16,6 +16,26 @@ Zabbix Server 7.0 (192.168.0.2)
 
 Zabbix、Net-SNMP、rsyslogはvendorへ複製しません。既存ZabbixとOSパッケージを利用します。vendorで固定するOSSはBluditだけです。
 
+## Incident evidence collectors
+
+4台のローカルサーバーでは、`kzabbix-evidence.timer`が1分ごとに次の証拠を
+`/var/tmp/kzabbix/evidence.json`へ保存します。
+
+- journal/kernel/syslogの警告・エラー
+- `iostat`、PSI、`/proc/diskstats`、上位I/Oプロセス
+- CPU、メモリ、ファイルシステム、ネットワークカウンター
+- Dockerコンテナ負荷、失敗中のsystemd unit、NVMe sysfs状態
+
+Zabbix Agent 2のactive itemがスナップショットとAgent内部ログを7日間保持します。
+障害Webhookを受けたワーカーは、イベント前後のスナップショット、Zabbixメトリクス、
+実際の復旧イベント時刻をまとめてGemma4へ渡します。
+
+```bash
+scripts/deploy_evidence_collectors.sh
+set -a; . ./.env; set +a
+.venv/bin/python scripts/configure_zabbix.py
+```
+
 ## Development
 
 ```bash

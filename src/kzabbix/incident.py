@@ -32,7 +32,9 @@ def redact(value: Any) -> Any:
 def build_prompt(payload: dict[str, Any], evidence: dict[str, Any]) -> str:
     safe = redact(evidence)
     interesting = re.compile(
-        r"(?i)(log|agent\.ping|system\.uptime|net\.|icmpping|web\.|resolv\.conf|/proc/net/route|error|drop)"
+        r"(?i)(kzabbix|evidence|log|journal|kernel|smart|nvme|disk|vfs\.dev|pressure|iostat|proc\."
+        r"|cpu|load|memory|swap|filesystem|vfs\.fs|agent\.ping|system\.uptime|net\."
+        r"|icmpping|web\.|resolv\.conf|/proc/net/route|error|drop|timeout|oom)"
     )
     safe["items"] = [
         item
@@ -46,15 +48,26 @@ def build_prompt(payload: dict[str, Any], evidence: dict[str, Any]) -> str:
     ]
     safe["history"] = history[-300:]
     compact = json.dumps(safe, ensure_ascii=False, separators=(",", ":"))
-    while len(compact) > 50_000 and len(safe["history"]) > 40:
-        safe["history"] = safe["history"][len(safe["history"]) // 4 :]
+    while len(compact) > 50_000 and len(safe["history"]) > 60:
+        safe["history"] = safe["history"][len(safe["history"]) // 3 :]
         compact = json.dumps(safe, ensure_ascii=False, separators=(",", ":"))
+    if len(compact) > 50_000 and len(safe.get("evidence_snapshots", [])) > 1:
+        safe["evidence_snapshots"] = safe["evidence_snapshots"][-1:]
+        compact = json.dumps(safe, ensure_ascii=False, separators=(",", ":"))
+    if len(compact) > 50_000:
+        compact = json.dumps(
+            {"truncated": True, "evidence_prefix": compact[:46_000]},
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
     return f"""あなたはKurage Zabbixの障害調査担当です。以下のZabbixイベントと実測データだけを根拠に、日本語Markdownレポートを作成してください。
 
 必須ルール:
 - 観測事実、推定、未確認事項を明確に分ける。
 - 原因を断定できない場合は断定しない。
 - 時刻、ホスト、障害時間、復旧状況、ログ行、メトリクスを具体的に示す。
+- 障害時間はactual_duration_secondsがある場合だけ実測として記載する。トリガー評価期間を障害時間とみなさない。
+- evidence_snapshots内のjournal、kernel、iostat、top_process_io、containersを優先して原因を切り分ける。
 - PCスリープ、OS再起動、LAN、DNS、ルーターWAN、ISP、監視サーバー障害を可能な範囲で切り分ける。
 - 秘密情報らしき値は再掲しない。
 - 最後に「原因候補と確度」「推奨対応」「追加で必要な証拠」を記載する。

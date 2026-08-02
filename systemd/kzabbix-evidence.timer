@@ -1,0 +1,12 @@
+[Unit]
+Description=Collect Kurage Zabbix incident evidence every minute
+
+[Timer]
+OnBootSec=20s
+OnUnitActiveSec=60s
+AccuracySec=5s
+Persistent=true
+Unit=kzabbix-evidence.service
+
+[Install]
+WantedBy=timers.target

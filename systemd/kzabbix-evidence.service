@@ -1,0 +1,6 @@
+[Unit]
+Description=Kurage Zabbix incident evidence snapshot
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/.local/lib/kzabbix/kzabbix_evidence.py
