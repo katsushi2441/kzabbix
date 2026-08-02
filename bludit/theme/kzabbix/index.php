@@ -81,7 +81,7 @@ $avatarUrl = 'https://kurage.exbridge.jp/blog/bl-themes/kurage/img/kurage_avatar
       <article class="report-card">
         <div class="report-meta">
           <span class="status-badge">調査レポート</span>
-          <time><?php echo htmlspecialchars($report->date(), ENT_QUOTES, 'UTF-8'); ?></time>
+          <time datetime="<?php echo htmlspecialchars($report->dateRaw(), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($report->date('Y年n月j日 H:i'), ENT_QUOTES, 'UTF-8'); ?></time>
           <span><?php echo htmlspecialchars($report->readingTime(), ENT_QUOTES, 'UTF-8'); ?></span>
         </div>
         <h2><a href="<?php echo $report->permalink(); ?>"><?php echo htmlspecialchars($report->title(), ENT_QUOTES, 'UTF-8'); ?></a></h2>
@@ -114,7 +114,7 @@ $avatarUrl = 'https://kurage.exbridge.jp/blog/bl-themes/kurage/img/kurage_avatar
   <nav class="breadcrumb" aria-label="パンくずリスト"><a href="<?php echo DOMAIN_BASE; ?>">トップ</a><span>›</span><a href="<?php echo DOMAIN_BASE; ?>#reports">レポート一覧</a><span>›</span><span>障害調査レポート</span></nav>
   <div class="detail-layout">
     <article class="report-detail">
-      <div class="report-meta"><span class="status-badge">障害調査レポート</span><time><?php echo htmlspecialchars($page->date(), ENT_QUOTES, 'UTF-8'); ?></time><span><?php echo htmlspecialchars($page->readingTime(), ENT_QUOTES, 'UTF-8'); ?></span></div>
+      <div class="report-meta"><span class="status-badge">障害調査レポート</span><time datetime="<?php echo htmlspecialchars($page->dateRaw(), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($page->date('Y年n月j日 H:i'), ENT_QUOTES, 'UTF-8'); ?></time><span><?php echo htmlspecialchars($page->readingTime(), ENT_QUOTES, 'UTF-8'); ?></span></div>
       <h1><?php echo htmlspecialchars($page->title(), ENT_QUOTES, 'UTF-8'); ?></h1>
       <div class="detail-divider"><span></span><b>Kurage Zabbix AI Investigation</b></div>
       <div class="report-body"><?php echo $page->content(); ?></div>
