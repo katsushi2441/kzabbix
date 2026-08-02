@@ -36,6 +36,14 @@ set -a; . ./.env; set +a
 .venv/bin/python scripts/configure_zabbix.py
 ```
 
+`xb-rtx3090-1`のNVMeについては、低使用率時の同期書込みを障害扱いしないよう、
+待ち時間20ms超過に加えて5分平均使用率70%超過を要求するホスト専用トリガーを使用します。
+
+```bash
+set -a; . ./.env; set +a
+.venv/bin/python scripts/configure_nvme_trigger.py
+```
+
 ## Development
 
 ```bash
