@@ -47,6 +47,28 @@ def read_text(path: str, limit: int = 3000) -> str:
         return f"unavailable: {exc.strerror or type(exc).__name__}"
 
 
+def parse_loadavg(text: str) -> dict[str, Any]:
+    fields = text.split()
+    if len(fields) < 5:
+        return {"error": "invalid /proc/loadavg", "raw": text[:200]}
+    running, total = fields[3].split("/", 1)
+    return {
+        "load_1m": float(fields[0]),
+        "load_5m": float(fields[1]),
+        "load_15m": float(fields[2]),
+        "running_processes": int(running),
+        "total_processes": int(total),
+        "last_pid": int(fields[4]),
+    }
+
+
+def loadavg() -> dict[str, Any]:
+    try:
+        return parse_loadavg(Path("/proc/loadavg").read_text().strip())
+    except (OSError, ValueError) as exc:
+        return {"error": str(exc)}
+
+
 def process_io_sample() -> dict[int, tuple[int, int, str]]:
     result: dict[int, tuple[int, int, str]] = {}
     for io_path in glob.glob("/proc/[0-9]*/io"):
@@ -135,7 +157,8 @@ def collect() -> dict[str, Any]:
         "host": socket.gethostname(),
         "system": {
             "uptime": run(["uptime"], limit=1000),
-            "loadavg": read_text("/proc/loadavg", 500),
+            "uptime_seconds": float(read_text("/proc/uptime", 100).split()[0]),
+            "loadavg": loadavg(),
             "memory": run(["free", "-m"], limit=3000),
             "filesystems": run(["df", "-hT", "-x", "tmpfs", "-x", "devtmpfs"], limit=5000),
             "failed_units": run(["systemctl", "--failed", "--no-pager", "--no-legend"], limit=5000),

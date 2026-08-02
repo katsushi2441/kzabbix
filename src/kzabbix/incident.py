@@ -68,6 +68,7 @@ def build_prompt(payload: dict[str, Any], evidence: dict[str, Any]) -> str:
 - 時刻、ホスト、障害時間、復旧状況、ログ行、メトリクスを具体的に示す。
 - 障害時間はactual_duration_secondsがある場合だけ実測として記載する。トリガー評価期間を障害時間とみなさない。
 - evidence_snapshots内のjournal、kernel、iostat、top_process_io、containersを優先して原因を切り分ける。
+- system.loadavgのload_1m/load_5m/load_15mは、それぞれ1分・5分・15分平均として記載する。
 - PCスリープ、OS再起動、LAN、DNS、ルーターWAN、ISP、監視サーバー障害を可能な範囲で切り分ける。
 - 秘密情報らしき値は再掲しない。
 - 最後に「原因候補と確度」「推奨対応」「追加で必要な証拠」を記載する。
