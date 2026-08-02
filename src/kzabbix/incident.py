@@ -92,6 +92,35 @@ Zabbix evidence:
 """
 
 
+def is_problem_event(payload: dict[str, Any]) -> bool:
+    return str(payload.get("event_status") or "").strip().upper() == "PROBLEM"
+
+
+def build_problem_notification(payload: dict[str, Any]) -> tuple[str, str]:
+    host = str(payload.get("host_name") or "unknown-host")
+    event_name = str(payload.get("event_name") or "Zabbix incident")
+    event_date = str(payload.get("event_date") or "")
+    event_time = str(payload.get("event_time") or "")
+    detected_at = " ".join(part for part in (event_date, event_time) if part) or "不明"
+    subject = f"[障害発生] {host}: {event_name}"
+    body = "\n".join(
+        [
+            "Zabbixが障害を検知しました。",
+            "",
+            f"ホスト: {host}",
+            f"障害: {event_name}",
+            f"重要度: {payload.get('event_severity') or '不明'}",
+            f"検知日時: {detected_at}",
+            f"イベントID: {payload.get('event_id') or '不明'}",
+            f"トリガーID: {payload.get('trigger_id') or '不明'}",
+            "",
+            "AI調査レポートはKurage Zabbixブログへ保存されます。",
+            "https://kurage.exbridge.jp/zabbix/",
+        ]
+    )
+    return subject, body
+
+
 class IncidentProcessor:
     def __init__(
         self,
@@ -108,7 +137,17 @@ class IncidentProcessor:
         self.bludit = bludit
 
     def process(self, incident_id: str, payload: dict[str, Any]) -> None:
+        email_sent = 0
+        notification_errors: list[str] = []
         try:
+            if is_problem_event(payload):
+                try:
+                    subject, body = build_problem_notification(payload)
+                    self.email.send(subject, body)
+                    email_sent = 1
+                    self.store.update(incident_id, email_sent=email_sent)
+                except Exception as exc:  # noqa: BLE001 - notification failure must remain visible
+                    notification_errors.append(f"email: {exc}")
             self.store.update(incident_id, status="collecting", error="")
             evidence = self.zabbix.collect_incident(
                 str(payload.get("event_id") or ""), str(payload.get("host_id") or "")
@@ -123,14 +162,8 @@ class IncidentProcessor:
             host = str(payload.get("host_name") or "unknown-host")
             event_name = str(payload.get("event_name") or "Zabbix incident")
             title = f"[{host}] {event_name} ({incident_id})"
-            errors: list[str] = []
-            email_sent = 0
+            errors = notification_errors
             blog_posted = 0
-            try:
-                self.email.send(title, report)
-                email_sent = 1
-            except Exception as exc:  # noqa: BLE001 - notification failure must remain visible
-                errors.append(f"email: {exc}")
             try:
                 self.bludit.publish(title, report, incident_id)
                 blog_posted = 1
