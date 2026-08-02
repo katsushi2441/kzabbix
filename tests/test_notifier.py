@@ -1,4 +1,6 @@
-from kzabbix.notifier import EmailNotifier
+import base64
+
+from kzabbix.notifier import BluditPublisher, EmailNotifier
 
 
 class FakeSMTP:
@@ -78,3 +80,27 @@ def test_relay_is_used_when_authenticated_smtp_fails(monkeypatch):
     notifier.send("test subject", "test report")
 
     assert len(relay_calls) == 1
+
+
+def test_bludit_content_is_base64_encoded(monkeypatch):
+    class Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"status": "0", "data": {"key": "report"}}
+
+    calls = []
+
+    def post(*args, **kwargs):
+        calls.append((args, kwargs))
+        return Response()
+
+    monkeypatch.setattr("kzabbix.notifier.requests.post", post)
+    publisher = BluditPublisher("https://example.jp/api/pages", "api", "auth", "gate")
+
+    publisher.publish("Incident", "journal: suspicious /var/log line", "zbx-1")
+
+    payload = calls[0][1]["json"]
+    assert "content" not in payload
+    assert base64.b64decode(payload["contentBase64"]).decode() == "journal: suspicious /var/log line"

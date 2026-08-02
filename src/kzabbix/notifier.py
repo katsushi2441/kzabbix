@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import smtplib
 import ssl
 from email.message import EmailMessage
@@ -101,7 +102,7 @@ class BluditPublisher:
                 "token": self.api_token,
                 "authentication": self.auth_token,
                 "title": title,
-                "content": report,
+                "contentBase64": base64.b64encode(report.encode("utf-8")).decode("ascii"),
                 "type": "published",
                 "category": "incidents",
                 "tags": "zabbix,incident," + incident_id,

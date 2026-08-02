@@ -26,7 +26,11 @@ $site['twitter'] = 'https://x.com/xb_bittensor';
 writeDb($sitePath, $site);
 $usersPath = $root . '/bl-content/databases/users.php';
 $users = readDb($usersPath);
+$salt = bin2hex(random_bytes(8));
+$users['admin']['salt'] = $salt;
+$users['admin']['password'] = sha1($argv[5] . $salt);
 $users['admin']['tokenAuth'] = $argv[3];
+$users['admin']['tokenAuthTTL'] = '2099-12-31 23:59';
 $users['admin']['email'] = 'katsushi2441@gmail.com';
 writeDb($usersPath, $users);
 $apiDir = $root . '/bl-content/databases/plugins/api';
@@ -35,4 +39,3 @@ writeDb($apiDir . '/db.php', ['token' => $argv[2], 'numberOfItems' => 50, 'posit
 $gate = "<?php\nreturn ['token' => " . var_export($argv[4], true) . "];\n";
 file_put_contents($root . '/bl-content/kzabbix_gate.php', $gate, LOCK_EX);
 @mkdir($root . '/bl-themes/kzabbix', 0755, true);
-
