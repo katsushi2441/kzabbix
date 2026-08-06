@@ -85,6 +85,49 @@ def process_io_sample() -> dict[int, tuple[int, int, str]]:
     return result
 
 
+def top_processes(sort_key: str, rows: int = 20) -> list[dict[str, Any]]:
+    """上位プロセスを構造化して返す。sort_key は ps の --sort 指定（例 "-%mem"）。
+
+    文字列のまま持つと後段の切り詰めで肝心の行が落ちるため、行数を先に絞って
+    dict の配列にする。args はコマンドラインなので秘密が混じり得る。redact を通す。
+    """
+    # run() は output[-limit:] で「末尾を残す」切り詰めをするため、ps の全出力を
+    # 渡すと上位（先頭）が消える。行数を ps 側で絞ってから受け取る。
+    raw = run(
+        [
+            "bash",
+            "-lc",
+            "ps -eo pid,ppid,user,stat,rss,%cpu,%mem,comm,args "
+            f"--sort={sort_key} | head -n {rows + 1}",
+        ],
+        limit=40000,
+    )
+    out: list[dict[str, Any]] = []
+    for line in raw.splitlines()[1:]:
+        parts = line.split(None, 8)
+        if len(parts) < 9:
+            continue
+        pid, ppid, user, stat, rss, cpu, mem, comm, args = parts
+        try:
+            entry = {
+                "pid": int(pid),
+                "ppid": int(ppid),
+                "user": user,
+                "stat": stat,
+                "rss_kb": int(rss),
+                "cpu_percent": float(cpu),
+                "mem_percent": float(mem),
+                "comm": comm,
+                "args": redact(args)[:160],
+            }
+        except ValueError:
+            continue
+        out.append(entry)
+        if len(out) >= rows:
+            break
+    return out
+
+
 def top_process_io() -> list[dict[str, Any]]:
     before = process_io_sample()
     time.sleep(0.5)
@@ -174,9 +217,13 @@ def collect() -> dict[str, Any]:
             "top_process_io": top_process_io(),
             "nvme": nvme_sysfs(),
         },
-        "processes": run(
-            ["ps", "-eo", "pid,ppid,user,stat,comm,%cpu,%mem", "--sort=-%cpu"], limit=6000
-        ),
+        # CPU順とメモリ順を別々に上位20件ずつ取る。
+        # 以前は --sort=-%cpu の一本だけを3000文字で切っており、メモリ障害のとき
+        # 犯人が一覧に残らなかった(2026-08-07 0.14のメモリ99.8%障害で、証拠に
+        # kworkerの羅列しか写らず原因プロセスを特定できなかった)。
+        # comm はコマンド名15文字までで python3 同士を区別できないため args も取る。
+        "processes": top_processes("-%cpu"),
+        "processes_by_memory": top_processes("-%mem"),
         "containers": run(
             [
                 "docker",
@@ -244,7 +291,12 @@ def write_evidence(data: dict[str, Any]) -> None:
             key: value[-2000:] if isinstance(value, str) else value
             for key, value in data.get("logs", {}).items()
         }
-        data["processes"] = str(data.get("processes", ""))[:3000]
+        # プロセスは構造化済みなので、文字列で切らず件数で削る。
+        # 文字列で切ると先頭のkworkerだけ残って犯人が消える(改善前の実害)。
+        for key in ("processes", "processes_by_memory"):
+            value = data.get(key)
+            if isinstance(value, list):
+                data[key] = value[:10]
         data["containers"] = str(data.get("containers", ""))[:3000]
         raw = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     temporary = OUTPUT.with_suffix(".tmp")
